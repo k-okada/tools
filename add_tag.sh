@@ -5,8 +5,8 @@
 SLUG=$1
 DEBUG=${2:-TRUE}
 
-git clone git@github.com:$SLUG $SLUG
-cd $SLUG
+git clone git@github.com:$SLUG /tmp/$SLUG
+cd /tmp/$SLUG
 git fetch --all
 git reset --hard origin/master
 git log --oneline | head -10
