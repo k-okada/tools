@@ -53,12 +53,16 @@ def get_repository_version(org, repo):
 
 # usage send_to_bloom jsk-ros-pkg jsk_common
 import sys
-if len(sys.argv) != 3 :
+if len(sys.argv) > 4 :
     print "usage: %s jsk-ros-pkg jsk_common"%sys.argv[0]
     exit(-1)
 
 organization = sys.argv[1]
 repository = sys.argv[2]
+if len(sys.argv) == 4:
+    repository_name = sys.argv[3]
+else:
+    repository_name = repository
 
 # if it already pull request for ros/rosdistro
 gh = Github(user='ros', repo='rosdistro')
@@ -85,14 +89,14 @@ import bloom.commands.release
 import os
 pretend = False
 for rosdistro in ['hydro','indigo', 'jade']:
-    ros_v = get_release_version(rosdistro, repository)
+    ros_v = get_release_version(rosdistro, repository_name)
     os.environ['BLOOM_TRACK'] = rosdistro
     if ros_v and repo_v != ros_v :
-        print "run bloom for ", repository
+        print "run bloom for ", repository_name
         sys.stdout.flush()
         bloom.summary._summary_file = None
         bloom.commands.release._rosdistro_index_commit = None
-        perform_release(repository=repository, track=rosdistro, distro=rosdistro,
+        perform_release(repository=repository_name, track=rosdistro, distro=rosdistro,
                         new_track=None, interactive=None, pretend=pretend, pull_request_only=None, override_release_repository_url=None, override_release_repository_push_url=None)
         time.sleep(60)
 
