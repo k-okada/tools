@@ -66,7 +66,7 @@ else:
 
 # if it already pull request for ros/rosdistro
 gh = Github(user='ros', repo='rosdistro')
-if filter(lambda x: repository in x.title, gh.pull_requests.list().all()) != []:
+if filter(lambda x: repository_name in x.title, gh.pull_requests.list().all()) != []:
     print "pull requests exists in ros/rosdistro"
     exit(0)
 
