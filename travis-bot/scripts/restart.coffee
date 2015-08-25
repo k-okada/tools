@@ -16,10 +16,10 @@ module.exports = (robot) ->
     else
         token = process.env.okada_TOKEN
     console.log("restarting #{repo} #{job} #{token}")
-    child_process.exec "travis restart --token #{token} -r #{repo} #{job}", (error1, stdout1, stderr1) ->
+    child_process.exec "travis login --github-token #{token}; travis restart -r #{repo} #{job}", (error1, stdout1, stderr1) ->
       stdout1 = stdout1.replace(/\n$/, "")
       console.log("restarted ... error : " + error1 + ", stdout : " + stdout1 + ", stderr : " + stderr1)
-      child_process.exec "travis open --token #{token} -r #{repo} #{job} --print", (error2, stdout2, stderr2) ->
+      child_process.exec "travis open -r #{repo} #{job} --print", (error2, stdout2, stderr2) ->
         stdout2 = stdout2.replace(/\n$/, "")
         console.log("web view : " + error2 + ", stdout : " + stdout2 + ", stderr : " + stderr2)
         if !error1
