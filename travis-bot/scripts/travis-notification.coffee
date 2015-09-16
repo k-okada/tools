@@ -21,7 +21,7 @@ module.exports = (robot) ->
     "Yuki Furuta": "furushchev",
   }
 
-  robot.listen(
+  robot.catchAll(
     (message) ->
       message.user.name is "Travis CI"
     (response) ->
