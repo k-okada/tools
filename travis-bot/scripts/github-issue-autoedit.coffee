@@ -5,22 +5,20 @@
 #   * auto labeling (ex. if title is "[bug] Hogehoge", add label "bug")
 
 
-url = require('url')
+url = require 'url'
 
 module.exports = (robot) ->
 
-    github = require("githubot")(robot)
-    url_api_base = "https://api.github.com"
+    github = require('githubot')(robot)
 
-    owner = "jsk-ros-pkg"
-    channel_name = "github"
+    channel_name = '#github'
 
     # Auto labeling by issue title
-    robot.router.post "/github/github-issue-autoedit", (req, res) ->
+    robot.router.post '/github/github-issue-autoedit', (req, res) ->
         data = req.body
 
         if data.action not in ['opened', 'reopened']
-            return res.end ""
+            return res.end ''
 
         issue = data.issue
         repo = data.repository
@@ -28,13 +26,13 @@ module.exports = (robot) ->
         match = /^\[(.*)\]/.exec(issue.title)
         label = match[1]
 
-        if label:
-          url = "#{url_api_base}/repos/#{owner}/#{repo.name}/issues/#{issue.number}"
-          data = { "label": label }
-          github.patch url, data, (issue, error) ->
+        if label
+          issue.labels.push(label)
+          url = "repos/#{repo.owner.login}/#{repo.name}/issues/#{issue.number}"
+          github.patch url, {labels: issue.labels}, (issue) ->
             if ! issue?
-              robot.messageRoom channel_name, "Error occured on issue \##{issue.number} auto labeling."
+              robot.messageRoom channel_name, "Error occured on issue *#{repo.full_name}\##{issue.number}* auto labeling."
               return
-            body = "Added label #{label} to *\##{pullreq.number}*."
+            body = "Added label *#{label}* to *#{repo.full_name}\##{issue.number}*."
             robot.messageRoom channel_name, body
-            res.end ""
+            res.end ''
