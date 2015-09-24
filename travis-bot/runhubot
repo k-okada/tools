@@ -1,5 +1,6 @@
 #!/bin/bash
 
+export PORT=9999
 export HUBOT_GITHUB_TOKEN=$okada_TOKEN
 export HUBOT_SLACK_TOKEN=xoxb-9405634242-mjwbtad1YKaUX9PEnB6t0g7O
 export HUBOT_SLACK_CHANNELS=hubottest, travis
