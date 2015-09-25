@@ -4,37 +4,52 @@
 # Features:
 #   * auto labeling (ex. if title is "[bug] Hogehoge", add label "bug")
 
+GitHub = require("github")
+github = new GitHub({
+  version: "3.0.0"
+  protocol: "https",
+  host: "api.github.com",
+  timeout: 5000,
+})
+github.authenticate({
+  type: "oauth",
+  token: process.env.HUBOT_GITHUB_TOKEN,
+})
 
-url = require('url')
+url = require 'url'
 
 module.exports = (robot) ->
 
-    github = require("githubot")(robot)
-    url_api_base = "https://api.github.com"
+    githubot = require('githubot')(robot)
 
-    owner = "jsk-ros-pkg"
-    channel_name = "github"
+    channel_name = '#github'
 
     # Auto labeling by issue title
-    robot.router.post "/github/github-issue-autoedit", (req, res) ->
+    robot.router.post '/github/github-issue-autoedit', (req, res) ->
         data = req.body
 
         if data.action not in ['opened', 'reopened']
-            return res.end ""
+            return res.end ''
 
         issue = data.issue
         repo = data.repository
 
         match = /^\[(.*)\]/.exec(issue.title)
-        label = match[1]
+        label_new = match[1]
 
-        if label:
-          url = "#{url_api_base}/repos/#{owner}/#{repo.name}/issues/#{issue.number}"
-          data = { "label": label }
-          github.patch url, data, (issue, error) ->
-            if ! issue?
-              robot.messageRoom channel_name, "Error occured on issue \##{issue.number} auto labeling."
-              return
-            body = "Added label #{label} to *\##{pullreq.number}*."
-            robot.messageRoom channel_name, body
-            res.end ""
+        if not label_new
+          return res.end ''
+
+        github.issues.getLabels {user: repo.owner.login, repo: repo.name}, (error, labels) ->
+          # Check if the specified label exists
+          for label in labels
+            if label_new is label.name
+              issue.labels.push(label_new)
+              url = "repos/#{repo.owner.login}/#{repo.name}/issues/#{issue.number}"
+              githubot.patch url, {labels: issue.labels}, (issue) ->
+                if not issue?
+                  robot.messageRoom channel_name, "Error occured on issue *#{repo.full_name}\##{issue.number}* auto labeling."
+                  return
+                body = "Added label *#{label_new}* to *#{repo.full_name}\##{issue.number}*."
+                robot.messageRoom channel_name, body
+                res.end ''
