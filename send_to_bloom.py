@@ -88,7 +88,7 @@ import bloom.commands.release
 
 import os
 pretend = False
-for rosdistro in ['hydro','indigo', 'jade']:
+for rosdistro in ['indigo', 'jade']:
     ros_v = get_release_version(rosdistro, repository_name)
     os.environ['BLOOM_TRACK'] = rosdistro
     if ros_v and repo_v != ros_v :
