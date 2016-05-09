@@ -11,7 +11,7 @@ module.exports = (robot) ->
   robot.respond /travis\s+(.*)\s+(.*)$/i, (msg) ->
     repo = msg.match[1]
     job = msg.match[2]
-    if repo.match(/fkanehiro\/hrpsys-base/)
+    if repo.match(/fkanehiro\/hrpsys-base/) or repo.match(/fkanehiro\/openhrp3/)
         token = process.env.kanehiro_TOKEN
     else
         token = process.env.okada_TOKEN
